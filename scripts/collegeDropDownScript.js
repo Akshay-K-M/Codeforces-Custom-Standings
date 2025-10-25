@@ -44,7 +44,7 @@ function addCollegeDropdown() {
         // Create dropdown select
         const select = document.createElement('select');
         select.id = 'cf-college-dropdown';
-        select.style.cssText = 'padding: 0.3em 0.5em; font-size: 1.0rem;';
+        select.style.cssText = 'font-size:1.0rem !important;padding:1px;';
 
         // Get current list ID from URL
         const currentListIdMatch = currentUrl.match(/standings\?list=([^&]+)/);
