@@ -1,5 +1,5 @@
 {
-  "name": "College Forces",
+  "name": "Codeforces Custom Standings",
   "description": "College standings and bookmarking for Codeforces.",
   "version": "1.0",
   "manifest_version": 3,
@@ -20,17 +20,17 @@
         "https://codeforces.com/contest/*/standings*",
         "https://codeforces.com/contest/*/ratings*"
       ],
-      "js": ["scripts/contentScript.js"]
+      "js": ["scripts/collegeButtonScript.js"]
     },
     {
       "matches": [
         "https://codeforces.com/contest/*/standings?list=*"
       ],
-      "js": ["scripts/dropdownListScript.js"]
+      "js": ["scripts/collegeDropDownScript.js"]
     },
     {
       "matches": ["https://codeforces.com/*"],
-      "js": ["scripts/listScript.js"]
+      "js": ["scripts/collegeListScript.js"]
     }
   ]
 }
