@@ -1,6 +1,5 @@
 console.log("listScript.js loaded!");
 
-
 // Helper function to get CSRF token from metadata
 function getCsrfToken() {
   const csrf = document.querySelector('meta[name="X-Csrf-Token"]');
@@ -70,7 +69,6 @@ async function getHandlesFromOrganization(orgId) {
       break;
     }
   }
-  // Always limit to first 1000 because codeforces limits list size
   userList = userList.slice(0, 1000);
   console.log(`[org:${orgId}] Got ${userList.length} top-rated users`);
   return userList;
@@ -89,8 +87,6 @@ async function addMembersToList(csrfToken, listId, handles) {
       console.error(`[addMembersToList] HTTP error: ${resp.status}`);
       return false;
     }
-    // Further sanity check: did it succeed?
-    // (You can parse resp.text() and look for known "success" string.)
     return true;
   } catch (e) {
     console.error('[addMembers] Error:', e);
@@ -101,7 +97,7 @@ async function addMembersToList(csrfToken, listId, handles) {
 async function refreshNeededLists() {
   const csrfToken = getCsrfToken();
   if (!csrfToken) return;
-  chrome.storage.local.get(['bookmarkedColleges'], async (res) => {
+  chrome.storage.local.get(['bookmarkedColleges', 'defaultCollegeOrgId'], async (res) => {
     let colleges = res.bookmarkedColleges || [];
     const now = Date.now();
     let changed = false;
@@ -114,6 +110,13 @@ async function refreshNeededLists() {
           console.error("[refreshLists] Could not create/get list for", college, "(skipping org)");
           continue;
         }
+        
+        // Store listId in college object if not already stored
+        if (!college.listId) {
+          college.listId = listId;
+          changed = true;
+        }
+
         const handles = await getHandlesFromOrganization(college.orgId);
         if (!handles || !handles.length) {
           console.error(`[refreshLists] No users for orgId=${college.orgId}, not updating.`);
@@ -129,9 +132,16 @@ async function refreshNeededLists() {
         }
       }
     }
+    
     if (changed) {
       chrome.storage.local.set({ bookmarkedColleges: colleges }, () => {
-        console.log('[refreshLists] Updated lastRefreshed for some colleges');
+        console.log('[refreshLists] Updated lastRefreshed and listIds');
+        
+        // Update default college listId if needed
+        const defaultCollege = colleges.find(c => c.orgId === res.defaultCollegeOrgId);
+        if (defaultCollege && defaultCollege.listId) {
+          chrome.storage.local.set({ defaultCollegeListId: defaultCollege.listId });
+        }
       });
     }
   });
@@ -146,4 +156,4 @@ chrome.storage.onChanged.addListener((changes, area) => {
   }
 });
 
-console.log("listScript.js loaded and robust. No duplicates, users always added, and always recoverable.");
+console.log("listScript.js loaded and robust.");

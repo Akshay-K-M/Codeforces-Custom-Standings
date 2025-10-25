@@ -17,7 +17,8 @@
     },
     {
       "matches": [
-        "https://codeforces.com/contest/*/standings"
+        "https://codeforces.com/contest/*/standings*",
+        "https://codeforces.com/contest/*/ratings*"
       ],
       "js": ["scripts/contentScript.js"]
     },

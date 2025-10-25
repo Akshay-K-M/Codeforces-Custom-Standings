@@ -35,14 +35,15 @@ function injectBookmarkCheckbox() {
   });
 
   checkbox.addEventListener('change', () => {
-    chrome.storage.local.get(['bookmarkedColleges', 'defaultCollegeOrgId'], (result) => {
+    chrome.storage.local.get(['bookmarkedColleges', 'defaultCollegeOrgId', 'defaultCollegeListId'], (result) => {
       let colleges = result.bookmarkedColleges || [];
       const exists = colleges.some(c => c.orgId === orgId);
 
       if (checkbox.checked && !exists) {
-        colleges.push({ orgId, orgName, lastRefreshed: null });
+        // Add with listId as null initially (will be set by listScript)
+        colleges.push({ orgId, orgName, lastRefreshed: null, listId: null });
         if (colleges.length === 1) {
-          chrome.storage.local.set({ defaultCollegeOrgId: orgId });
+          chrome.storage.local.set({ defaultCollegeOrgId: orgId, defaultCollegeListId: null });
         }
         chrome.storage.local.set({ bookmarkedColleges: colleges }, () => {
           alert(`Bookmarked college: ${orgName}.`);
@@ -50,9 +51,11 @@ function injectBookmarkCheckbox() {
       } else if (!checkbox.checked && exists) {
         colleges = colleges.filter(c => c.orgId !== orgId);
         chrome.storage.local.set({ bookmarkedColleges: colleges });
+        // Update default if removed org was the default
         if (result.defaultCollegeOrgId === orgId) {
           const newDefault = colleges.length > 0 ? colleges[0].orgId : null;
-          chrome.storage.local.set({ defaultCollegeOrgId: newDefault });
+          const newDefaultListId = colleges.length > 0 ? colleges[0].listId : null;
+          chrome.storage.local.set({ defaultCollegeOrgId: newDefault, defaultCollegeListId: newDefaultListId });
         }
       }
     });
