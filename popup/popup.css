@@ -1,0 +1,18 @@
+body {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: Arial, sans-serif;
+  padding: 12px;
+}
+b {
+  font-size: 1rem;
+}
+a {
+  color: #2a71d4;
+  text-decoration: underline;
+  cursor: pointer;
+}
+p {
+  margin: 0;
+}

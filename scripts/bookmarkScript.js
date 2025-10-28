@@ -1,5 +1,6 @@
-console.log("bookmarkScript.js loaded!");
+console.log("bookmarkScript.js started!");
 
+// Inject bookmark checkbox into the college selection form
 function injectBookmarkCheckbox() {
   const container = document.querySelector('form#locationSelect');
   if (!container) {
@@ -67,3 +68,4 @@ function injectBookmarkCheckbox() {
 }
 
 injectBookmarkCheckbox();
+console.log("bookmarkScript.js completed!");

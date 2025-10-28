@@ -1,5 +1,6 @@
-console.log("contentScript.js loaded!");
+console.log("contentScript.js started!");
 
+// Add "College Standings" tab to contest page if there is at least one bookmarked college
 function addCollegeStandingsTab() {
   chrome.storage.local.get(['defaultCollegeListId'], (result) => {
     const defaultListId = result.defaultCollegeListId;
@@ -32,6 +33,7 @@ function addCollegeStandingsTab() {
     customTab.id = 'cf-college-standings-tab';
     customTab.innerHTML = `<a href="${standingsUrl}"><span>College Standings</span></a>`;
 
+    // Insert after friends standings tab if exists, else at end
     const friendsStandingsTab = tabContainer.querySelector('a[href*="standings/friends"]');
     if (friendsStandingsTab) {
       friendsStandingsTab.parentNode.insertAdjacentElement('afterend', customTab);
@@ -44,24 +46,29 @@ function addCollegeStandingsTab() {
     // Highlight tab if viewing college standings (check for ?list= in URL)
     const currentListIdMatch = currentUrl.match(/standings\?list=([^&]+)/);
     if (currentListIdMatch) {
-      // Multiple rounds of highlighting to override Codeforces's JS
       const highlightTab = () => {
         const tabs = tabContainer.querySelectorAll('li');
         tabs.forEach(tab => tab.classList.remove('current', 'selectedLava'));
         customTab.classList.add('current', 'selectedLava');
       };
       
-      // Immediate highlight
       highlightTab();
-      
-      // Re-highlight after short delays (to override CF's JS)
       setTimeout(highlightTab, 100);
       setTimeout(highlightTab, 300);
       setTimeout(highlightTab, 500);
-      
+
       console.log('[contentScript] College Standings tab highlighted (multiple times)');
     }
+
+    // Add hover event listeners to force hover classes irrespective of CF JS
+    customTab.addEventListener('mouseover', () => {
+      customTab.classList.add('hovered');
+    });
+    customTab.addEventListener('mouseout', () => {
+      customTab.classList.remove('hovered');
+    });
   });
 }
 
 addCollegeStandingsTab();
+console.log("contentScript.js completed!");

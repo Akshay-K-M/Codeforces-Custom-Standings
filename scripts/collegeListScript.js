@@ -1,4 +1,4 @@
-console.log("listScript.js loaded!");
+console.log("listScript.js started!");
 
 // Helper function to get CSRF token from metadata
 function getCsrfToken() {
@@ -46,6 +46,7 @@ async function getOrCreateList(csrfToken, listName) {
   return listId;
 }
 
+// Fetch top-rated users from an organization (up to 1000)
 async function getHandlesFromOrganization(orgId) {
   let userList = [], page = 1, hasMore = true;
   while (hasMore && userList.length < 1000) {
@@ -74,6 +75,7 @@ async function getHandlesFromOrganization(orgId) {
   return userList;
 }
 
+// Add members to a list by listId
 async function addMembersToList(csrfToken, listId, handles) {
   if (!handles.length) return false;
   try {
@@ -94,6 +96,7 @@ async function addMembersToList(csrfToken, listId, handles) {
   }
 }
 
+// Refresh lists for bookmarked colleges if needed
 async function refreshNeededLists() {
   const csrfToken = getCsrfToken();
   if (!csrfToken) return;
@@ -150,10 +153,11 @@ async function refreshNeededLists() {
 // Always refresh needed orgs on every page load
 refreshNeededLists();
 
+// Refresh lists when bookmarkedColleges change
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area === 'local' && changes.bookmarkedColleges) {
     refreshNeededLists();
   }
 });
 
-console.log("listScript.js loaded and robust.");
+console.log("listScript.js completed!");
